@@ -3,8 +3,19 @@
 mkdir certs
 cd certs
 
+├── certs
+│   ├── dhparam.pem
+│   ├── openldapCA.crt
+│   ├── openldap.crt
+│   └── openldap.key
+├── docker-compose.yml
+
+
 https://www.sslshopper.com/article-most-common-openssl-commands.html
 
+################################# Generate dhparam.pem #################################
+openssl dhparam -out dhparam.pem 2048
+ 
 ################################# RootCA #################################
 ### Generate Key *mycompany
 openssl genrsa -des3 -out rootCA.key 2048
@@ -29,6 +40,7 @@ openssl req -in openldap.csr -text -noout
 ### Sign Certificate with rootCA
 openssl x509 -req -in openldap.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out openldap.crt -days 1825 -sha256
 
-
+################################# Start docker-compose #####################
+docker-compose up -d
 
 
