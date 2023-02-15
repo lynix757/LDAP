@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  openldap:
+    image: osixia/openldap:1.5.0
+    container_name: openldap
+    volumes:
+      #- ./ldap-data:/var/lib/ldap
+      - openldap_data:/var/lib/ldap
+      - ./certs:/container/service/slapd/assets/certs
+    environment:
+      - LDAP_ORGANISATION="example"
+      - LDAP_DOMAIN=poc-example.org
+      - LDAP_ADMIN_PASSWORD=admin99@poc-ldap
+      - LDAP_TLS_VERIFY_CLIENT=allow
+      - LDAP_TLS_CRT_FILENAME=openldap.crt
+      - LDAP_TLS_KEY_FILENAME=openldap.key
+      - LDAP_TLS_CA_CRT_FILENAME=openldapCA.crt
+    ports:
+      - "1389:389"
+      - "1636:636"
+
+  phpldapadmin:
+    image: osixia/phpldapadmin:0.9.0
+    container_name: phpldapadmin
+    restart: unless-stopped
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=openldap
+    ports:
+      - "6443:443"
+    depends_on:
+      - openldap
+
+volumes:
+  openldap_data:
+    driver: local
